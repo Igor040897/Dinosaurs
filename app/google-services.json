@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "101044104546",
+    "project_id": "dinosaurs-182816"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:101044104546:android:4320e602ee584086",
+        "android_client_info": {
+          "package_name": "com.igor040897.dinosaurs"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "101044104546-c283p7ths0njjv4pl5t8fu5uiga9jbtl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.igor040897.dinosaurs",
+            "certificate_hash": "d287b04e3c8241e7464dda2ce4ec69379cac6d6d"
+          }
+        },
+        {
+          "client_id": "101044104546-bbhu0k006bhoki0k5sdu9oeon15gv2p3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-weHAeTp9LhdumOjQSz4kxYkNZlFodrg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

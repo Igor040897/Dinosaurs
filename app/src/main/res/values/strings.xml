@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Dinosaurs</string>
+    <string name="h_name">input first name</string>
+    <string name="h_number">input mobile number</string>
+    <string name="h_username">input username</string>
+    <string name="h_password">input password</string>
+    <string name="h_description">input description</string>
+    <string name="register">Зарегистрироваться</string>
+    <string name="error">Это фиаско! Пароль не такой.</string>
+    <string name="downloadImage">Фото из гелереи</string>
+    <string name="new_item">Новая запись</string>
+    <string name="dino">Dino</string>
+    <string name="login">Авторизация</string>
+    <string name="addDino">Добавить</string>
+</resources>

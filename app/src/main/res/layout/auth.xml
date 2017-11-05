@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/screenAuth"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center">
+
+    <EditText
+        android:id="@+id/auth_login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="@string/h_username"
+        android:inputType="textEmailAddress"/>
+
+    <EditText
+        android:id="@+id/auth_password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/auth_login"
+        android:layout_marginTop="@dimen/margin_large"
+        android:hint="@string/h_password"
+        android:inputType="textPassword" />
+
+    <Button
+        android:id="@+id/auth"
+        android:layout_width="wrap_content"
+        android:enabled="false"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/auth_password"
+        android:layout_marginTop="@dimen/margin_large"
+        android:text="@string/login" />
+
+    <Button
+        android:id="@+id/auth_register"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/auth"
+        android:layout_marginTop="@dimen/margin_large"
+        android:text="@string/register"/>
+</RelativeLayout>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/screenRegister"
+    android:layout_width="match_parent"
+    android:gravity="center"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/register_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="@string/h_name"
+        android:inputType="textPersonName" />
+
+    <EditText
+        android:layout_below="@+id/register_name"
+        android:layout_marginTop="@dimen/margin_large"
+        android:id="@+id/register_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="@string/h_number"
+        android:inputType="number" />
+
+
+    <EditText
+        android:layout_below="@+id/register_number"
+        android:layout_marginTop="@dimen/margin_large"
+        android:id="@+id/register_mail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="@string/h_username"
+        android:inputType="textEmailAddress" />
+
+    <Button
+        android:layout_below="@+id/register_mail"
+        android:layout_marginTop="@dimen/margin_large"
+        android:id="@+id/register"
+        android:enabled="false"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/register"/>
+
+</RelativeLayout>
