@@ -1,7 +1,7 @@
 package com.igor040897.dinosaurs.API;
 
 
-import com.igor040897.dinosaurs.API.Request.AddRequest;
+import com.igor040897.dinosaurs.API.Request.AddDinoRequest;
 import com.igor040897.dinosaurs.API.Request.AuthRequest;
 import com.igor040897.dinosaurs.API.Request.LoadImageRequest;
 import com.igor040897.dinosaurs.API.Request.RegisterRequest;
@@ -30,10 +30,11 @@ public interface LSApi {
     @GET("rest/dinos")
     Call<DinosResult> dinos();
 
-    @Headers({"Content-Type: application/json", "Accepts:application/json",
-            "X-CSRF-Token: [token]", "Cookie: [session_name]=[session_id]"})
+    @Headers({"Content-Type: application/json", "Accepts:application/json"})
     @POST("rest/node")
-    Call<AddResult> add(@Body AddRequest addRequest);
+    Call<AddResult> add(@Body AddDinoRequest addDinoRequest,
+                        @Header("X-CSRF-Token") String token,
+                        @Header("Cookie") String session_name_and_id);
 
     @Headers({"Content-Type: application/json", "Accepts:application/json"})
     @POST("rest/user")
@@ -48,15 +49,10 @@ public interface LSApi {
     @GET("rest/user/logout")
     Call<Boolean> logout(@Query("social_user_id") String socialUserId);
 
-    @Headers({"Content-Type: application/json", "Accepts:application/json",
-            "X-CSRF-Token: {token}",
-            "Cookie: {session_name}={session_id}"})
+    @Headers({"Content-Type: application/json", "Accepts:application/json"})
     @POST("rest/file")
     Call<LoadImageResult> loadImage(@Body LoadImageRequest register,
-//                                  @Path("token") String token,
-//                                  @Path("session_name") String session_name,
-//                                  @Path("session_id") String session_id,
-                                    @Header("X-CSRF-Token") String token
-//                                   @HeaderMap("Cookie") Map<String, String> headers
+                                    @Header("X-CSRF-Token") String token,
+                                    @Header("Cookie") String session_name_and_id
     );
 }

@@ -31,6 +31,7 @@ public class DinosaursAdapter extends RecyclerView.Adapter<DinosaursAdapter.Item
         final Dino item = items.get(position);
         holder.name.setText(item.getDino().getDino_title());
         holder.description.setText(item.getDino().getDinoAbout());
+        String str = item.getDino().getDinoImage().getSrc();
         Picasso.with(holder.itemView.getContext()).load(item.getDino().getDinoImage().getSrc()).resize(350, 300).into(holder.imageDino);
     }
 

@@ -8,20 +8,37 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Base64;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.igor040897.dinosaurs.API.DinoDate.DinoColor;
+import com.igor040897.dinosaurs.API.DinoDate.TidColor;
+import com.igor040897.dinosaurs.API.Request.AddDinoRequest;
+import com.igor040897.dinosaurs.API.Request.AuthRequest;
+import com.igor040897.dinosaurs.API.Request.LoadImageHeaderCookie;
+import com.igor040897.dinosaurs.API.Request.LoadImageRequest;
+
+import com.igor040897.dinosaurs.API.Result.AuthResult;
+import com.igor040897.dinosaurs.API.Result.LoadImageResult;
+import com.igor040897.dinosaurs.LSApp;
 import com.igor040897.dinosaurs.Manifest;
 import com.igor040897.dinosaurs.R;
+
+import java.io.File;
+import java.util.Arrays;
 
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.OnNeverAskAgain;
 import permissions.dispatcher.OnShowRationale;
 import permissions.dispatcher.PermissionRequest;
 import permissions.dispatcher.RuntimePermissions;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 @RuntimePermissions
 public class AddItemActivity extends AppCompatActivity {
@@ -124,8 +141,45 @@ public class AddItemActivity extends AppCompatActivity {
                     // Get the Uri of the selected file
                     Uri uri = data.getData();
                     uriImage = uri.getPath();
+                    File file = new File(uriImage);
+                    int index = uriImage.indexOf('.');
+                    String fileExtension = index == -1 ? null : uriImage.substring(++index);
+                    byte[] bytesEncoded = Base64.encode(uriImage.getBytes(), Base64.DEFAULT);
+
+                    if (fileExtension != null) {
+                        LSApp lsApp = ((LSApp) getApplicationContext());
+                        String string = lsApp.getAuthSessionName() + "=" + lsApp.getAuthSessionId();
+                        String str2 = new LoadImageHeaderCookie(lsApp.getAuthSessionName(),
+                                lsApp.getAuthSessionId()).toString();
+
+                        lsApp.api().loadImage(
+                                new LoadImageRequest(file.getName(),
+                                        uriImage,
+                                        fileExtension,
+                                        Arrays.toString(bytesEncoded),
+                                        String.valueOf(file.length())),
+                                lsApp.getAuthToken(),
+                                string
+                        ).enqueue(new Callback<LoadImageResult>() {
+                            @Override
+                            public void onResponse(Call<LoadImageResult> call, Response<LoadImageResult> response) {
+                                if (response.isSuccessful()) {
+                                    uriImage = response.body().getUri();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<LoadImageResult> call, Throwable t) {
+
+                            }
+                        });
+
+//                        lsApp.api().add(new AddDinoRequest(name, "", new DinoColor(TidColor.green), description, ))
+                    }
 
 
+
+//                    ((LSApi)getApplication()).loadImage(new LoadImageRequest())
 
                     add.setEnabled(!TextUtils.isEmpty(name.getText()) &&
                             !TextUtils.isEmpty(description.getText()) &&
