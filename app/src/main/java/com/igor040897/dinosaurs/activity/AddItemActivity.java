@@ -174,7 +174,7 @@ public class AddItemActivity extends AppCompatActivity {
                             }
                         });
 
-//                        lsApp.api().add(new AddDinoRequest(name, "", new DinoColor(TidColor.green), description, ))
+//                        lsApp.api().add(new AddDinoRequest(name, "igor", new DinoColor(TidColor.green), description, new DinoDate(new ArrayList<Date>), new DinoImageRequest(new ArrayList<Fid>) ))
                     }
 
 
