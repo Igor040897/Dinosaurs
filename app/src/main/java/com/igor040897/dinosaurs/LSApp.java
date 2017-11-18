@@ -50,11 +50,6 @@ public class LSApp extends Application {
             }
         }).build();
 
-//        OkHttpClient client = new OkHttpClient.Builder()
-//                .addInterceptor(new HttpLoggingInterceptor().setLevel(BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.HEADERS : HttpLoggingInterceptor.Level.NONE))
-//                .addInterceptor(new AuthInterceptor())
-//                .build();
-
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://dinotest.art-coral.com/")
                 .addConverterFactory(GsonConverterFactory.create())
