@@ -1,17 +1,20 @@
 package com.igor040897.dinosaurs;
 
+import android.app.Activity;
 import android.app.Application;
 import android.text.TextUtils;
 
-import com.github.aurae.retrofit2.LoganSquareConverterFactory;
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.igor040897.dinosaurs.API.LSApi;
 import com.igor040897.dinosaurs.API.Result.AuthResult;
+import com.igor040897.dinosaurs.di.components.DaggerApplicationComponent;
 
 import java.io.IOException;
 
+import javax.inject.Inject;
+
+import dagger.android.AndroidInjector;
+import dagger.android.DispatchingAndroidInjector;
+import dagger.android.HasActivityInjector;
 import okhttp3.Credentials;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
@@ -26,7 +29,13 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Created by fanre on 6/30/2017.
  */
 
-public class LSApp extends Application {
+public class LSApp extends Application implements HasActivityInjector{
+    @Inject
+    Retrofit retrofit;
+
+    @Inject
+    DispatchingAndroidInjector<Activity> dispatchingAndroidInjector;
+//    private ApplicationComponent applicationComponents;
 
     private static final String PREFERENCES_SESSION = "session";
     private static final String KEY_AUTH_TOKEN = "register-authToken";
@@ -40,21 +49,7 @@ public class LSApp extends Application {
     public void onCreate() {
         super.onCreate();
 
-        OkHttpClient okHttpClient = new OkHttpClient().newBuilder().addInterceptor(new Interceptor() {
-            @Override
-            public okhttp3.Response intercept(Chain chain) throws IOException {
-                Request originalRequest = chain.request();
-                Request.Builder builder =    originalRequest.newBuilder().header("Authorization", Credentials.basic("aUsername", "aPassword"));
-                Request newRequest = builder.build();
-                return chain.proceed(newRequest);
-            }
-        }).build();
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://dinotest.art-coral.com/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(okHttpClient)
-                .build();
+        DaggerApplicationComponent.create().inject(this);
 
         api = retrofit.create(LSApi.class);
     }
@@ -83,6 +78,11 @@ public class LSApp extends Application {
 
     public boolean isLoggedIn() {
         return !TextUtils.isEmpty(getAuthToken());
+    }
+
+    @Override
+    public AndroidInjector<Activity> activityInjector() {
+        return dispatchingAndroidInjector;
     }
 
     private class AuthInterceptor implements Interceptor {
