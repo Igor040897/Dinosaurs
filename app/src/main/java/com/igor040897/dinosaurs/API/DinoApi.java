@@ -18,40 +18,41 @@ import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
+import rx.Observable;
 
 
 /**
  * Created by fanre on 6/29/2017.
  */
 
-public interface LSApi {
+public interface DinoApi {
 
     @Headers({"Content-Type: application/json", "Accepts:application/json"})
     @GET("rest/dinos")
-    Call<DinosResult> dinos();
+    Observable<DinosResult> dinos();
 
     @Headers({"Content-Type: application/json", "Accepts:application/json"})
     @POST("rest/node")
-    Call<AddResult> add(@Body AddDinoRequest addDinoRequest,
+    Observable<AddResult> add(@Body AddDinoRequest addDinoRequest,
                         @Header("X-CSRF-Token") String token,
                         @Header("Cookie") String session_name_and_id);
 
     @Headers({"Content-Type: application/json", "Accepts:application/json"})
     @POST("rest/user")
-    Call<RegisterResult> register(@Body RegisterRequest register);
+    Observable<RegisterResult> register(@Body RegisterRequest register);
 
     @Headers({"Content-Type: application/json", "Accepts:application/json"})
     @POST("rest/user/login")
-    Call<AuthResult> login(@Body AuthRequest auth);
+    Observable<AuthResult> login(@Body AuthRequest auth);
 
     @Headers({"Content-Type: application/json", "Accepts: application/json",
             "X-CSRF-Token: [token]", "Cookie: [session_name]=[session_id]"})
     @GET("rest/user/logout")
-    Call<Boolean> logout(@Query("social_user_id") String socialUserId);
+    Observable<Boolean> logout(@Query("social_user_id") String socialUserId);
 
     @Headers({"Content-Type: application/json", "Accepts:application/json"})
     @POST("rest/file")
-    Call<LoadImageResult> loadImage(@Body LoadImageRequest register,
+    Observable<LoadImageResult> loadImage(@Body LoadImageRequest register,
                                     @Header("X-CSRF-Token") String token,
                                     @Header("Cookie") String session_name_and_id
     );

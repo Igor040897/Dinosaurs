@@ -1,5 +1,7 @@
 package com.igor040897.dinosaurs.API.DinoDate;
 
+import android.arch.persistence.room.Entity;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -18,8 +20,6 @@ public class DinoImage {
     @SerializedName("alt")
     @Expose @Getter @Setter
     private String alt;
-
-    DinoImage(){}
 
     public DinoImage(String src, String alt) {
         this.src = src;

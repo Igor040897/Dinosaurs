@@ -1,4 +1,4 @@
-package com.igor040897.dinosaurs;
+package com.igor040897.dinosaurs.mvp.model;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -8,17 +8,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.igor040897.dinosaurs.API.DinoDate.Dino;
+import com.igor040897.dinosaurs.API.DinoDate.Dino_;
+import com.igor040897.dinosaurs.R;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by fanre on 6/27/2017.
- */
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class DinosaursAdapter extends RecyclerView.Adapter<DinosaursAdapter.ItemViewHolder> {
-    private final List<Dino> items = new ArrayList<>();
+    private final List<Dino_> items = new ArrayList<>();
 
     @Override
     public ItemViewHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
@@ -28,11 +29,10 @@ public class DinosaursAdapter extends RecyclerView.Adapter<DinosaursAdapter.Item
 
     @Override
     public void onBindViewHolder(final ItemViewHolder holder, final int position) {
-        final Dino item = items.get(position);
-        holder.name.setText(item.getDino().getDino_title());
-        holder.description.setText(item.getDino().getDinoAbout());
-        String str = item.getDino().getDinoImage().getSrc();
-        Picasso.with(holder.itemView.getContext()).load(item.getDino().getDinoImage().getSrc()).resize(350, 300).into(holder.imageDino);
+        final Dino_ item = items.get(position);
+        holder.name.setText(item.getDino_title());
+        holder.description.setText(item.getDinoAbout());
+        Picasso.with(holder.itemView.getContext()).load(item.getDinoImage().getSrc()).resize(350, 300).into(holder.imageDino);
     }
 
     @Override
@@ -44,26 +44,29 @@ public class DinosaursAdapter extends RecyclerView.Adapter<DinosaursAdapter.Item
         items.clear();
     }
 
-    public void addAll(final List<Dino>items) {
-        this.items.addAll(items);
+    public void addAll(final List<Dino> items) {
+        for (Dino dino : items) {
+            this.items.add(dino.getDino());
+        }
         notifyDataSetChanged();
     }
 
-    public void add(final Dino item){
+    public void add(final Dino_ item) {
         this.items.add(item);
         notifyDataSetChanged();
     }
 
     class ItemViewHolder extends RecyclerView.ViewHolder {
-        private final TextView name, description;
-        private final ImageView imageDino;
+        @BindView(R.id.item_name)
+        TextView name;
+        @BindView(R.id.item_description)
+        TextView description;
+        @BindView(R.id.image_dino)
+        ImageView imageDino;
 
         ItemViewHolder(final View itemView) {
             super(itemView);
-//            View view = itemView.findViewById(R.id.info);
-            name = itemView.findViewById(R.id.item_name);
-            description = itemView.findViewById(R.id.item_description);
-            imageDino = itemView.findViewById(R.id.image_dino);
+            ButterKnife.bind(this, itemView);
         }
     }
 }

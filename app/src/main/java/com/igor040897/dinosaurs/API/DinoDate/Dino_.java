@@ -1,5 +1,8 @@
 package com.igor040897.dinosaurs.API.DinoDate;
 
+import android.arch.persistence.room.Embedded;
+import android.arch.persistence.room.Entity;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -25,13 +28,12 @@ public class Dino_ {
 
     @SerializedName("dino_image")
     @Expose @Getter @Setter
+    @Embedded
     private DinoImage dinoImage;
 
     @SerializedName("dino_about")
     @Expose @Getter @Setter
     private String dinoAbout;
-
-    Dino_(){}
 
     public Dino_(String dino_title, String dinoColor, String dinoBirthdate, DinoImage dinoImage, String dinoAbout) {
         this.dino_title = dino_title;

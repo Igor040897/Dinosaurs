@@ -1,6 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.igor040897.dinosaurs">
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -10,7 +11,7 @@
     <permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
-        android:name=".LSApp"
+        android:name=".DinoApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -18,7 +19,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".activity.MainActivity"
+            android:name=".ui.activity.MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,8 +28,8 @@
         </activity>
 
         <activity
-            android:name=".activity.AuthActivity"
-            android:parentActivityName="com.igor040897.dinosaurs.activity.MainActivity"
+            android:name=".ui.activity.AuthActivity"
+            android:parentActivityName="com.igor040897.dinosaurs.ui.activity.MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -37,9 +38,9 @@
         </activity>
 
         <activity
-            android:name=".activity.AddItemActivity"
+            android:name=".ui.activity.AddItemActivity"
             android:label="@string/new_item"
-            android:parentActivityName="com.igor040897.dinosaurs.activity.MainActivity"
+            android:parentActivityName="com.igor040897.dinosaurs.ui.activity.MainActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysVisible">
             <intent-filter>
@@ -48,8 +49,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.RegisterActivity"
-            android:parentActivityName="com.igor040897.dinosaurs.activity.MainActivity"
+            android:name=".ui.activity.RegisterActivity"
+            android:parentActivityName="com.igor040897.dinosaurs.ui.activity.MainActivity"
             android:screenOrientation="portrait" />
     </application>
 </manifest>

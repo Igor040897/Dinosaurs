@@ -1,7 +1,5 @@
 package com.igor040897.dinosaurs.API.Request;
 
-import com.igor040897.dinosaurs.API.LSApi;
-
 /**
  * Created by fanre on 11/6/2017.
  */

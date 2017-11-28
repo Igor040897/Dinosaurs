@@ -10,12 +10,18 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+//        multiDexEnabled true
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+
+    compileOptions{
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
@@ -27,22 +33,30 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
-
-    compile 'com.squareup.retrofit2:retrofit:2.3.0'
-    compile 'com.squareup.retrofit2:converter-gson:2.3.0'
-    compile 'com.github.aurae.retrofit2:converter-logansquare:1.4.0'
-    compile 'com.squareup.okhttp3:logging-interceptor:3.8.0'
-    compile 'com.google.code.gson:gson:2.8.0'
-
-    compile 'com.android.support:design:26.1.0'
-
-
+    implementation 'com.android.support:design:26.1.0'
     provided "javax.annotation:jsr250-api:1.0"
 
-    compile 'com.squareup.picasso:picasso:2.5.2'
+    //Picasso
+    implementation 'com.squareup.picasso:picasso:2.5.2'
 
-    compile "com.github.hotchemi:permissionsdispatcher:2.3.1"
+    //PermissionsDispatcher
+    implementation "com.github.hotchemi:permissionsdispatcher:2.3.1"
     annotationProcessor "com.github.hotchemi:permissionsdispatcher-processor:2.3.1"
+
+    //Retrofit2
+    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava:2.3.0'
+    implementation 'com.github.aurae.retrofit2:converter-logansquare:1.4.0'
+
+    //Gson
+    implementation 'com.google.code.gson:gson:2.8.0'
+
+    //OkHttp3
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.8.0'
+
+    //RxAndroid
+    implementation 'io.reactivex:rxandroid:1.2.1'
 
     //Lombok
     compileOnly 'org.projectlombok:lombok:1.16.18'
@@ -53,8 +67,22 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 
     //Dagger 2
-    compile 'com.google.dagger:dagger:2.11'
-    compile 'com.google.dagger:dagger-android:2.11'
-    annotationProcessor 'com.google.dagger:dagger-android-processor:2.11'
+    implementation 'com.google.dagger:dagger:2.11'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.11'
+
+    //Dagger-Android
+    implementation 'com.google.dagger:dagger-android:2.11'
+    annotationProcessor 'com.google.dagger:dagger-android-processor:2.11'
+
+    //Moxy
+    implementation 'com.arello-mobile:moxy:1.5.3'
+    annotationProcessor 'com.arello-mobile:moxy-compiler:1.5.3'
+    //For additional base view classes MvpActivity and MvpFragment
+    implementation 'com.arello-mobile:moxy-android:1.5.3'
+    //MvpAppCompatActivity and MvpAppCompatFragment
+    implementation 'com.arello-mobile:moxy-app-compat:1.5.3'
+
+    //Room
+    implementation "android.arch.persistence.room:runtime:1.0.0"
+    annotationProcessor "android.arch.persistence.room:compiler:1.0.0"
 }

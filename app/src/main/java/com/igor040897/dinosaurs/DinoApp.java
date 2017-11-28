@@ -1,41 +1,21 @@
 package com.igor040897.dinosaurs;
 
-import android.app.Activity;
 import android.app.Application;
+import android.arch.persistence.room.Room;
 import android.text.TextUtils;
 
-import com.igor040897.dinosaurs.API.LSApi;
 import com.igor040897.dinosaurs.API.Result.AuthResult;
+import com.igor040897.dinosaurs.di.components.ApplicationComponent;
 import com.igor040897.dinosaurs.di.components.DaggerApplicationComponent;
+import com.igor040897.dinosaurs.di.module.DinoApiModule;
+import com.igor040897.dinosaurs.di.module.ContextModule;
+import com.igor040897.dinosaurs.mvp.model.db.DatabaseHelper;
 
-import java.io.IOException;
-
-import javax.inject.Inject;
-
-import dagger.android.AndroidInjector;
-import dagger.android.DispatchingAndroidInjector;
-import dagger.android.HasActivityInjector;
-import okhttp3.Credentials;
-import okhttp3.HttpUrl;
-import okhttp3.Interceptor;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.logging.HttpLoggingInterceptor;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-
-/**
- * Created by fanre on 6/30/2017.
- */
-
-public class LSApp extends Application implements HasActivityInjector{
-    @Inject
-    Retrofit retrofit;
-
-    @Inject
-    DispatchingAndroidInjector<Activity> dispatchingAndroidInjector;
-//    private ApplicationComponent applicationComponents;
+public class DinoApp extends Application /*implements HasActivityInjector*/ {
+    private static ApplicationComponent applicationComponent;
+    private static DatabaseHelper db;
+//    @Inject
+//    DispatchingAndroidInjector<Activity> dispatchingAndroidInjector;
 
     private static final String PREFERENCES_SESSION = "session";
     private static final String KEY_AUTH_TOKEN = "register-authToken";
@@ -43,19 +23,26 @@ public class LSApp extends Application implements HasActivityInjector{
     private static final String KEY_SESSION_ID = "register-session_id";
     private static final String KEY_SESSION_NAME = "register-session_name";
 
-    private LSApi api;
-
     @Override
     public void onCreate() {
         super.onCreate();
 
-        DaggerApplicationComponent.create().inject(this);
+        applicationComponent = DaggerApplicationComponent.builder()
+                .dinoApiModule(new DinoApiModule())
+                .contextModule(new ContextModule(this))
+                .build();
 
-        api = retrofit.create(LSApi.class);
+        db = Room.databaseBuilder(getApplicationContext(), DatabaseHelper.class, "date-dinos")
+                .allowMainThreadQueries()
+                .build();
     }
 
-    public LSApi api() {
-        return api;
+    public static DatabaseHelper getDatabaseInstance(){
+        return db;
+    }
+
+    public static ApplicationComponent component() {
+        return applicationComponent;
     }
 
     public void setAuthDate(AuthResult authDate) {
@@ -80,17 +67,8 @@ public class LSApp extends Application implements HasActivityInjector{
         return !TextUtils.isEmpty(getAuthToken());
     }
 
-    @Override
-    public AndroidInjector<Activity> activityInjector() {
-        return dispatchingAndroidInjector;
-    }
-
-    private class AuthInterceptor implements Interceptor {
-        @Override
-        public Response intercept(Chain chain) throws IOException {
-            Request originalRequest = chain.request();
-            HttpUrl url = originalRequest.url().newBuilder().addQueryParameter("register-authToken", getAuthToken()).build();
-            return chain.proceed(originalRequest.newBuilder().url(url).build());
-        }
-    }
+//    @Override
+//    public AndroidInjector<Activity> activityInjector() {
+//        return dispatchingAndroidInjector;
+//    }
 }

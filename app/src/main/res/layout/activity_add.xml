@@ -7,7 +7,7 @@
     android:gravity="center"
     android:orientation="vertical"
     android:paddingBottom="@dimen/margin_largest"
-    tools:context=".activity.MainActivity"
+    tools:context=".ui.activity.MainActivity"
     android:layout_marginTop="@dimen/margin_large">
 
     <Button

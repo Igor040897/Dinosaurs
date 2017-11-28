@@ -1,4 +1,4 @@
-package com.igor040897.dinosaurs.activity;
+package com.igor040897.dinosaurs.ui.activity;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -9,36 +9,29 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Base64;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.igor040897.dinosaurs.API.DinoDate.DinoColor;
-import com.igor040897.dinosaurs.API.DinoDate.TidColor;
-import com.igor040897.dinosaurs.API.Request.AddDinoRequest;
-import com.igor040897.dinosaurs.API.Request.AuthRequest;
-import com.igor040897.dinosaurs.API.Request.LoadImageHeaderCookie;
+import com.igor040897.dinosaurs.API.DinoApi;
 import com.igor040897.dinosaurs.API.Request.LoadImageRequest;
-
-import com.igor040897.dinosaurs.API.Result.AuthResult;
-import com.igor040897.dinosaurs.API.Result.LoadImageResult;
-import com.igor040897.dinosaurs.LSApp;
+import com.igor040897.dinosaurs.DinoApp;
 import com.igor040897.dinosaurs.Manifest;
 import com.igor040897.dinosaurs.R;
 
 import java.io.File;
 import java.util.Arrays;
 
+import javax.inject.Inject;
+
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.OnNeverAskAgain;
 import permissions.dispatcher.OnShowRationale;
 import permissions.dispatcher.PermissionRequest;
 import permissions.dispatcher.RuntimePermissions;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 @RuntimePermissions
 public class AddItemActivity extends AppCompatActivity {
@@ -47,6 +40,9 @@ public class AddItemActivity extends AppCompatActivity {
     public static final String RESULT_DESCRIPTION = "description";
     public static final String RESULT_URI_IMAGE = "uri";
     public static final int RC_ADD_ITEM = 99;
+
+    @Inject
+    DinoApi api;
 
     private String uriImage = "";
     private TextView add;
@@ -58,6 +54,8 @@ public class AddItemActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add);
+
+        DinoApp.component().inject(this);
 
         name = findViewById(R.id.name);
         description = findViewById(R.id.description);
@@ -84,24 +82,18 @@ public class AddItemActivity extends AppCompatActivity {
         };
 
         final AddItemActivity temp = this;
-        download.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                AddItemActivityPermissionsDispatcher.readImageWithCheck(temp);
-                showFileChooser();
-            }
+        download.setOnClickListener(view -> {
+            AddItemActivityPermissionsDispatcher.readImageWithCheck(temp);
+            showFileChooser();
         });
 
-        add.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent result = new Intent();
-                result.putExtra(RESULT_NAME, name.getText().toString());
-                result.putExtra(RESULT_DESCRIPTION, description.getText().toString());
-                result.putExtra(RESULT_URI_IMAGE, uriImage);
-                setResult(RESULT_OK, result);
-                finish();
-            }
+        add.setOnClickListener(v -> {
+            Intent result = new Intent();
+            result.putExtra(RESULT_NAME, name.getText().toString());
+            result.putExtra(RESULT_DESCRIPTION, description.getText().toString());
+            result.putExtra(RESULT_URI_IMAGE, uriImage);
+            setResult(RESULT_OK, result);
+            finish();
         });
 
         name.addTextChangedListener(textWatcher);
@@ -140,6 +132,7 @@ public class AddItemActivity extends AppCompatActivity {
                 if (resultCode == RESULT_OK) {
                     // Get the Uri of the selected file
                     Uri uri = data.getData();
+                    assert uri != null;
                     uriImage = uri.getPath();
                     File file = new File(uriImage);
                     int index = uriImage.indexOf('.');
@@ -147,40 +140,28 @@ public class AddItemActivity extends AppCompatActivity {
                     byte[] bytesEncoded = Base64.encode(uriImage.getBytes(), Base64.DEFAULT);
 
                     if (fileExtension != null) {
-                        LSApp lsApp = ((LSApp) getApplicationContext());
-                        String string = lsApp.getAuthSessionName() + "=" + lsApp.getAuthSessionId();
-                        String str2 = new LoadImageHeaderCookie(lsApp.getAuthSessionName(),
-                                lsApp.getAuthSessionId()).toString();
+                        DinoApp dinoApp = ((DinoApp) getApplicationContext());
+                        String string = dinoApp.getAuthSessionName() + "=" + dinoApp.getAuthSessionId();
+//                        String str2 = new LoadImageHeaderCookie(dinoApp.getAuthSessionName(),
+//                                dinoApp.getAuthSessionId()).toString();
 
-                        lsApp.api().loadImage(
+                        api.loadImage(
                                 new LoadImageRequest(file.getName(),
                                         uriImage,
                                         fileExtension,
                                         Arrays.toString(bytesEncoded),
                                         String.valueOf(file.length())),
-                                lsApp.getAuthToken(),
+                                dinoApp.getAuthToken(),
                                 string
-                        ).enqueue(new Callback<LoadImageResult>() {
-                            @Override
-                            public void onResponse(Call<LoadImageResult> call, Response<LoadImageResult> response) {
-                                if (response.isSuccessful()) {
-                                    uriImage = response.body().getUri();
-                                }
-                            }
+                        )
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(resultLoadImage -> uriImage = resultLoadImage.getUri(),
+                                        Throwable::printStackTrace);
 
-                            @Override
-                            public void onFailure(Call<LoadImageResult> call, Throwable t) {
-
-                            }
-                        });
-
-//                        lsApp.api().add(new AddDinoRequest(name, "igor", new DinoColor(TidColor.green), description, new DinoDate(new ArrayList<Date>), new DinoImageRequest(new ArrayList<Fid>) ))
+//                        dinoApp.api().add(new AddDinoRequest(name, "igor", new DinoColor(TidColor.green), description, new DinoDate(new ArrayList<Date>), new DinoImageRequest(new ArrayList<Fid>) ))
                     }
-
-
-
-//                    ((LSApi)getApplication()).loadImage(new LoadImageRequest())
-
+//                    ((DinoApi)getApplication()).loadImage(new LoadImageRequest())
                     add.setEnabled(!TextUtils.isEmpty(name.getText()) &&
                             !TextUtils.isEmpty(description.getText()) &&
                             !TextUtils.isEmpty(uriImage));
