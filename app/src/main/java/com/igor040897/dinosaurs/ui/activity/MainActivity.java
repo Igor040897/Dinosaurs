@@ -1,14 +1,13 @@
-package com.igor040897.dinosaurs.activity;
+package com.igor040897.dinosaurs.ui.activity;
 
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
-import com.igor040897.dinosaurs.ItemsFragment;
-import com.igor040897.dinosaurs.LSApp;
+import com.igor040897.dinosaurs.DinoApp;
+import com.igor040897.dinosaurs.ui.fragment.ItemsFragment;
 import com.igor040897.dinosaurs.R;
 
 public class MainActivity extends AppCompatActivity {
@@ -22,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (!((LSApp) getApplication()).isLoggedIn()) {
+        if (!((DinoApp) getApplication()).isLoggedIn()) {
             startActivity(new Intent(this, AuthActivity.class));
         } else {
             Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.values);

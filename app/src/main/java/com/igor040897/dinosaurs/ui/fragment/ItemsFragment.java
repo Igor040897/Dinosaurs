@@ -1,6 +1,8 @@
-package com.igor040897.dinosaurs;
+package com.igor040897.dinosaurs.ui.fragment;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -15,31 +17,32 @@ import android.widget.Toast;
 import com.igor040897.dinosaurs.API.DinoDate.Dino;
 import com.igor040897.dinosaurs.API.DinoDate.DinoImage;
 import com.igor040897.dinosaurs.API.DinoDate.Dino_;
-import com.igor040897.dinosaurs.API.LSApi;
-import com.igor040897.dinosaurs.API.Result.DinosResult;
-import com.igor040897.dinosaurs.activity.AddItemActivity;
+import com.igor040897.dinosaurs.API.DinoApi;
+import com.igor040897.dinosaurs.DinoApp;
+import com.igor040897.dinosaurs.R;
+import com.igor040897.dinosaurs.mvp.model.DinosaursAdapter;
+import com.igor040897.dinosaurs.mvp.model.db.DataModel;
+import com.igor040897.dinosaurs.mvp.model.db.DatabaseHelper;
+import com.igor040897.dinosaurs.ui.activity.AddItemActivity;
 
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import javax.inject.Inject;
+
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 import static android.app.Activity.RESULT_OK;
-import static com.igor040897.dinosaurs.activity.AddItemActivity.RC_ADD_ITEM;
-
-/**
- * Created by fanre on 6/27/2017.
- */
+import static com.igor040897.dinosaurs.ui.activity.AddItemActivity.RC_ADD_ITEM;
 
 public class ItemsFragment extends Fragment {
-    public static final int LODER_ITEMS = 0;
-    public static final int LODER_ADD = 1;
-
     private DinosaursAdapter adapter = new DinosaursAdapter();
 
-    private LSApi api;
-    private Button add;
+    @Inject
+    DinoApi api;
+
+    DatabaseHelper databaseHelper;
+
     private SwipeRefreshLayout refresh;
 
     @Nullable
@@ -52,28 +55,36 @@ public class ItemsFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        DinoApp.component().inject(this);
+
+        final Button add = view.findViewById(R.id.ok);
         final RecyclerView items = view.findViewById(R.id.items);
-        items.setAdapter(adapter);
-
         refresh = view.findViewById(R.id.refresh);
-        refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                loadItems();
-            }
+
+        items.setAdapter(adapter);
+        refresh.setOnRefreshListener(this::loadItems);
+        add.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), AddItemActivity.class);
+            startActivityForResult(intent, RC_ADD_ITEM);
         });
 
-        add = view.findViewById(R.id.ok);
-        add.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), AddItemActivity.class);
-                startActivityForResult(intent, RC_ADD_ITEM);
-            }
-        });
-        api = ((LSApp) getActivity().getApplication()).api();
+        databaseHelper = DinoApp.getDatabaseInstance();
+        if (isNetworkConnecting()) {
+            loadItems();
+        } else {
+            List<DataModel> dataModels = databaseHelper.getDataDao().getAllData();
+            for (DataModel dataModel : dataModels) {
+                adapter.add(dataModel.getDino());
+            }//make in other tread
+        }
+    }
 
-        loadItems();
+    boolean isNetworkConnecting() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        return cm != null &&
+                (cm.getActiveNetworkInfo() != null &&
+                        cm.getActiveNetworkInfo().isConnectedOrConnecting());
     }
 
 //    @Override
@@ -103,22 +114,22 @@ public class ItemsFragment extends Fragment {
 //    }
 
     private void loadItems() {
-        api.dinos().enqueue(new Callback<DinosResult>() {
-            @Override
-            public void onResponse(Call<DinosResult> call, Response<DinosResult> response) {
-                if (response.isSuccessful()) {
+        api.dinos()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(resultDinos -> {
+                    List<Dino> dinos = resultDinos.getDinos();
                     adapter.clear();
-                    List<Dino> dinos = response.body().getDinos();
                     adapter.addAll(dinos);
+
+                    DataModel model = new DataModel();
+                    for (Dino dino : dinos) {
+                        model.setDino(dino.getDino());
+                        databaseHelper.getDataDao().insert(model);
+                    }//make inside other tread
+
                     refresh.setRefreshing(false);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<DinosResult> call, Throwable t) {
-            }
-        });
-
+                }, Throwable::printStackTrace);
     }
 
     @Override
@@ -129,7 +140,12 @@ public class ItemsFragment extends Fragment {
             String uri = data.getStringExtra(AddItemActivity.RESULT_URI_IMAGE);
 
             Dino item = (new Dino(new Dino_(name, "", "", new DinoImage(uri, ""), description)));
-            adapter.add(item);
+            adapter.add(item.getDino());
+
+            DataModel model = new DataModel();//move to function
+            model.setDino(item.getDino());//move to function
+            databaseHelper.getDataDao().insert(model);//move to function
+
 //            addItem(item);
             Toast.makeText(getContext(), item.getDino().getDino_title(), Toast.LENGTH_LONG).show();
         }
